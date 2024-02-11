@@ -1,6 +1,6 @@
 <div class="ft">
 
-  <h2 class="ft__caption">Подсчет статистики</h2>
+  <h2 class="ft__ta-caption">Подсчет статистики</h2>
 
   <h4>Пример оформления:</h4>
 
@@ -30,3 +30,34 @@
 <!-- <ft-file-drop (textDrop)="renderFileContent( $event )">
   Drop Your File ( like it's hot )
 </ft-file-drop> -->
+
+<!-- <div *ngFor="let item of statHash | keyvalue">
+  Key: <b>{{item.key}}</b> and Value: <b>{{item.value | json }}</b>
+</div> -->
+
+<table class="ft__table">
+  <tbody class="ft__body">
+    <tr
+      class="ft__row"
+      *ngFor="let team of statHash | keyvalue"
+    >
+      <td>{{team.key}}</td>
+      <td>
+    <tr class="ft__table-caption">
+      <td>Игрок</td>
+      <td>К-во игр</td>
+      <td>К-во голов</td>
+    </tr>
+
+    <tr
+      class="ft__table-data"
+      *ngFor="let player of team.value | keyvalue"
+    >
+      <td>{{ player.key }}</td>
+      <td>{{ player.value.games }}</td>
+      <td>{{ player.value.goals }}</td>
+    </tr>
+    </td>
+    </tr>
+  </tbody>
+</table>

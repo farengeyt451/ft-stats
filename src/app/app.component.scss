@@ -23,3 +23,28 @@
   margin: 30px 0 30px 0;
   font-size: 20px;
 }
+
+.ft__table {
+  margin-top: 40px;
+  width: 100%;
+
+  td {
+    display: table-cell;
+    width: 200px;
+  }
+}
+
+.ft__table-caption {
+  display: block;
+  background-color: brown;
+  padding: 10px;
+}
+
+.ft__table-data {
+  display: block;
+  padding: 5px;
+}
+
+.ft__row {
+  border: 2px solid saddlebrown;
+}

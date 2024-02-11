@@ -24,7 +24,16 @@ export class AppComponent implements DoCheck {
 
   public matchUps: MatchUp[] = [];
   public refereeHash: Record<string, any> = {};
-  public statHash: Record<string, any> = {};
+  public statHash: Record<
+    string,
+    Record<
+      string,
+      {
+        games: number;
+        goals: number;
+      }
+    >
+  > = {};
 
   constructor() {}
 
@@ -58,7 +67,9 @@ export class AppComponent implements DoCheck {
     const lines = data.split('\n');
 
     lines.forEach((line: string) => {
-      this.sliceString(line);
+      if (line.length > 2 && !line.includes('ТУР')) {
+        this.sliceString(line);
+      }
     });
 
     this.createHashTable(this.matchUps);
@@ -102,6 +113,7 @@ export class AppComponent implements DoCheck {
       const referee = line.slice(startIndex + 8, endIndex - 2).trim();
       return referee;
     } else {
+      console.error(line);
       throw new Error('Can not find referee');
     }
   }
@@ -109,8 +121,11 @@ export class AppComponent implements DoCheck {
   getTeamStructure(line: string) {
     const startIndex = line.indexOf('Состав');
     const lineLength = line.length;
-    const endIndex =
-      line.indexOf('Гол') === -1 ? lineLength : line.indexOf('Гол');
+    const goalIndex = line.indexOf('Гол:');
+    const goalsIndex = line.indexOf('Голы:');
+    const gi = goalIndex === -1 ? goalsIndex : goalIndex;
+
+    const endIndex = gi === -1 ? lineLength : gi;
 
     if (startIndex !== -1 && endIndex !== -1 && startIndex < endIndex) {
       return line
@@ -118,6 +133,8 @@ export class AppComponent implements DoCheck {
         .trim()
         .replace(/[()]/g, '')
         .replace(/\d/g, '')
+        .replace(/;/g, '')
+        .replace(/\./g, '')
         .split(',')
         .map((el) => el.trim().split(' '))
         .flat()
@@ -165,7 +182,7 @@ export class AppComponent implements DoCheck {
     if (this.isDoubleMatchUp(line)) {
       const teamNames = this.extractQuotedTeam(line);
       const teamDividerIndex = teamStructure.indexOf('–');
-      const goalsDividerIndex = goals.indexOf('–');
+      // const goalsDividerIndex = goals.indexOf('–');
 
       const teamStructure1 = teamStructure.slice(0, teamDividerIndex);
       const teamStructure2 = teamStructure.slice(
@@ -173,8 +190,16 @@ export class AppComponent implements DoCheck {
         teamStructure.length
       );
 
-      const goals1 = goals.slice(0, goalsDividerIndex);
-      const goals2 = goals.slice(goalsDividerIndex + 1, goals.length);
+      let goals1: any = [];
+      let goals2: any = [];
+
+      goals.forEach((goal) => {
+        if (teamStructure1.includes(goal)) {
+          goals1.push(goal);
+        } else {
+          goals2.push(goal);
+        }
+      });
 
       teamNames.forEach((teamName, index) => {
         const match: MatchUp = {
