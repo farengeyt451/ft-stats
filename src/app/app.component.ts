@@ -134,10 +134,10 @@ export class AppComponent implements DoCheck {
         .replace(/[()]/g, '')
         .replace(/\d/g, '')
         .replace(/;/g, '')
-        .replace(/\./g, '')
         .split(',')
         .map((el) => el.trim().split(' '))
         .flat()
+        .map((el) => el.replace(/\.$/g, ''))
         .filter(Boolean);
     } else {
       return [''];
@@ -153,7 +153,8 @@ export class AppComponent implements DoCheck {
       const goalsData = line
         .substring(goalsIndex + 5)
         .trim()
-        .replace(/[\d.]/g, '')
+        .replace(/\d/g, '')
+        .replace(/\.$/g, '')
         .split(',')
         .map((el) => el.trim().split(' '))
         .flat()
