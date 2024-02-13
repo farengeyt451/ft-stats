@@ -23,7 +23,12 @@ export class AppComponent implements DoCheck {
   public readonly title = 'ft-stats';
 
   public matchUps: MatchUp[] = [];
-  public refereeHash: Record<string, any> = {};
+  public refereeHash: Record<
+    string,
+    {
+      games: number;
+    }
+  > = {};
   public statHash: Record<
     string,
     Record<
@@ -63,16 +68,22 @@ export class AppComponent implements DoCheck {
       });
   }
 
+  clearData() {
+    window.location.reload();
+  }
+
   formStats(data: string) {
     const lines = data.split('\n');
 
     lines.forEach((line: string) => {
-      if (line.length > 2 && !line.includes('ТУР')) {
-        this.sliceString(line);
-      }
+      this.validateLine(line) && this.sliceString(line);
     });
 
     this.createHashTable(this.matchUps);
+  }
+
+  validateLine(line: string): boolean {
+    return line.includes('Судья') && line.includes('Состав');
   }
 
   renderFileContent(value: string) {
@@ -233,7 +244,6 @@ export class AppComponent implements DoCheck {
   }
 
   createHashTable(matchUps: MatchUp[]) {
-    console.log(`🚀 ~ AppComponent ~ createHashTable ~ matchUps:`, matchUps);
     matchUps.forEach((matchUp: MatchUp) => {
       const { teamStructure, teamName, goals } = matchUp;
       const team = this.statHash[teamName];
@@ -273,8 +283,5 @@ export class AppComponent implements DoCheck {
         });
       }
     });
-
-    console.log(this.statHash);
-    console.log(this.refereeHash);
   }
 }

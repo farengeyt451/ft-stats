@@ -22,6 +22,22 @@
 .ft__file {
   margin: 30px 0 30px 0;
   font-size: 20px;
+  cursor: pointer;
+}
+
+.ft__clear {
+  font-size: 20px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.ft__caption {
+  text-align: center;
+}
+
+.ft__wrapper {
+  display: flex;
+  flex-wrap: wrap;
 }
 
 .ft__table,
@@ -38,7 +54,7 @@
 }
 
 .ft__table {
-  margin: 40px auto;
+  margin: 40px;
 }
 
 .ft__body-column--games,

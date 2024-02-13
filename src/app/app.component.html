@@ -18,40 +18,78 @@
   accept=".txt"
 >
 
+<button
+  class="ft__clear"
+  (click)="clearData()"
+>Очистить</button>
+
 <!-- <ft-file-drop (textDrop)="renderFileContent( $event )">
   Drop Your File ( like it's hot )
 </ft-file-drop> -->
 
-<table
-  class="ft__table"
-  *ngFor="let team of statHash | keyvalue"
->
-  <thead class="ft__head">
-    <tr class="ft__head-row">
-      <th
-        class="ft__head-column"
-        colspan="3"
-      >{{team.key}}</th>
-    </tr>
-  </thead>
+<ng-container *ngIf="fileContent">
 
-  <tbody class="ft__body">
-    <tr class="ft__body-row">
-      <td class="ft__body-column ft__body-column--player">Игрок</td>
-      <td class="ft__body-column ft__body-column--games">Количество игр</td>
-      <td class="ft__body-column ft__body-column--goals">Количество голов</td>
-    </tr>
+  <h3 class="ft__caption">Статистика команда/игроки </h3>
 
-    <tr
-      class="ft__body-row"
-      *ngFor="let player of team.value | keyvalue"
+  <div class="ft__wrapper">
+    <table
+      class="ft__table"
+      *ngFor="let team of statHash | keyvalue"
     >
-      <td class="ft__body-column ft__body-column--player">{{ player.key }}</td>
-      <td class="ft__body-column ft__body-column--games">{{ player.value.games }}</td>
-      <td class="ft__body-column ft__body-column--goals">{{ player.value.goals }}</td>
-    </tr>
-  </tbody>
-</table>
+      <thead class="ft__head">
+        <tr class="ft__head-row">
+          <th
+            class="ft__head-column"
+            colspan="3"
+          >{{team.key}}</th>
+        </tr>
+      </thead>
+
+      <tbody class="ft__body">
+        <tr class="ft__body-row">
+          <td class="ft__body-column ft__body-column--player">Игрок</td>
+          <td class="ft__body-column ft__body-column--games">Количество игр</td>
+          <td class="ft__body-column ft__body-column--goals">Количество голов</td>
+        </tr>
+
+        <tr
+          class="ft__body-row"
+          *ngFor="let player of team.value | keyvalue"
+        >
+          <td class="ft__body-column ft__body-column--player">{{ player.key }}</td>
+          <td class="ft__body-column ft__body-column--games">{{ player.value.games }}</td>
+          <td class="ft__body-column ft__body-column--goals">{{ player.value.goals }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+
+  <h3 class="ft__caption">
+    Статистика игры/судьи
+  </h3>
+
+  <div class="ft__wrapper">
+    <table class="ft__table">
+      <thead class="ft__head">
+        <tr class="ft__head-row">
+          <th class="ft__head-column">Судья</th>
+          <th class="ft__head-column">Количество игр</th>
+        </tr>
+      </thead>
+
+      <tbody class="ft__body">
+        <tr
+          class="ft__body-row"
+          *ngFor="let referee of refereeHash | keyvalue"
+        >
+          <td class="ft__body-column">{{ referee.key }}</td>
+          <td class="ft__body-column ft__body-column--games">{{ referee.value.games }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</ng-container>
 
 <ng-template [ngIf]="fileContent">
   <h4>Матчи:</h4>
