@@ -24,27 +24,24 @@
   font-size: 20px;
 }
 
-.ft__table {
-  margin-top: 40px;
-  width: 100%;
-
-  td {
-    display: table-cell;
-    width: 200px;
-  }
-}
-
-.ft__table-caption {
-  display: block;
-  background-color: brown;
-  padding: 10px;
-}
-
-.ft__table-data {
-  display: block;
+.ft__table,
+.ft__head-row,
+.ft__body-column {
+  font-weight: 600;
+  border: 3px solid saddlebrown;
+  border-collapse: collapse;
   padding: 5px;
 }
 
-.ft__row {
-  border: 2px solid saddlebrown;
+.ft__head-row:nth-child(odd) {
+  background-color: #e9ecef;
+}
+
+.ft__table {
+  margin: 40px auto;
+}
+
+.ft__body-column--games,
+.ft__body-column--goals {
+  text-align: center;
 }

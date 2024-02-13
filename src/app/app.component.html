@@ -18,6 +18,40 @@
   accept=".txt"
 >
 
+<!-- <ft-file-drop (textDrop)="renderFileContent( $event )">
+  Drop Your File ( like it's hot )
+</ft-file-drop> -->
+
+<table
+  class="ft__table"
+  *ngFor="let team of statHash | keyvalue"
+>
+  <thead class="ft__head">
+    <tr class="ft__head-row">
+      <th
+        class="ft__head-column"
+        colspan="3"
+      >{{team.key}}</th>
+    </tr>
+  </thead>
+
+  <tbody class="ft__body">
+    <tr class="ft__body-row">
+      <td class="ft__body-column ft__body-column--player">Игрок</td>
+      <td class="ft__body-column ft__body-column--games">Количество игр</td>
+      <td class="ft__body-column ft__body-column--goals">Количество голов</td>
+    </tr>
+
+    <tr
+      class="ft__body-row"
+      *ngFor="let player of team.value | keyvalue"
+    >
+      <td class="ft__body-column ft__body-column--player">{{ player.key }}</td>
+      <td class="ft__body-column ft__body-column--games">{{ player.value.games }}</td>
+      <td class="ft__body-column ft__body-column--goals">{{ player.value.goals }}</td>
+    </tr>
+  </tbody>
+</table>
 
 <ng-template [ngIf]="fileContent">
   <h4>Матчи:</h4>
@@ -26,38 +60,3 @@
     <pre>{{ fileContent }}</pre>
   </code>
 </ng-template>
-
-<!-- <ft-file-drop (textDrop)="renderFileContent( $event )">
-  Drop Your File ( like it's hot )
-</ft-file-drop> -->
-
-<!-- <div *ngFor="let item of statHash | keyvalue">
-  Key: <b>{{item.key}}</b> and Value: <b>{{item.value | json }}</b>
-</div> -->
-
-<table class="ft__table">
-  <tbody class="ft__body">
-    <tr
-      class="ft__row"
-      *ngFor="let team of statHash | keyvalue"
-    >
-      <td>{{team.key}}</td>
-      <td>
-    <tr class="ft__table-caption">
-      <td>Игрок</td>
-      <td>К-во игр</td>
-      <td>К-во голов</td>
-    </tr>
-
-    <tr
-      class="ft__table-data"
-      *ngFor="let player of team.value | keyvalue"
-    >
-      <td>{{ player.key }}</td>
-      <td>{{ player.value.games }}</td>
-      <td>{{ player.value.goals }}</td>
-    </tr>
-    </td>
-    </tr>
-  </tbody>
-</table>
