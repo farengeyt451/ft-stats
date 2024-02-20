@@ -29,6 +29,7 @@ export class AppComponent implements DoCheck {
       games: number;
     }
   > = {};
+
   public statHash: Record<
     string,
     Record<
@@ -40,12 +41,19 @@ export class AppComponent implements DoCheck {
     >
   > = {};
 
-  constructor() {}
+  public error: string = '';
+  public errorLine: string = '';
+
+  constructor() {
+    // this.renderFileContent(this.example);
+    // this.formStats(this.example);
+  }
 
   public fileContent: string = '';
   public example: string = `
-  "ЗАРЯ" – УРАЛМАШ – 3-1 (0-1). 31.03. Ст-н Авангард. 7000 зр. Судья – Лушин. Состав:  Кубышкин, Найденко, Малыгин, Кузовлев, Рабочий, Оленев, Стульчин, Малышенко, Колесников, Куксов, Лукьянчук (Иванов, 46). Голы: Колесников 69, Малышенко 71, Куксов 74.
-  "МЕТАЛЛИСТ" – "СКА Од" – 2-1 (1-0). 08.05. Ст-н Металлист. 20000 зр. Судья – Ходеев. Состав: Двуреченский, Дегтярев, Поточняк, Крячко, Ледней, Шаленко (Улинец, 67), Ткаченко (Журавчак, 87), Сааков, Линке (Довбий, 88), Бачиашвили, Шеленков. – Макашвили, Николаенко, Николайшвили (Сафроненко, 46), Клыков, Умрихин, Марусин, Жарков, Смаровоз (Криштан, 46), Беланов, Корюков, Щербина (Попов, 65). Голы: Бачиашвили 15, Бачиашвили 62 – Марусин 66.
+  !ЗАРЯ! – УРАЛМАШ – 3-1 (0-1). 31.03. Ст-н Авангард. 7000 зр. Судья – Лушин. Состав:  Кубышкин, Найденко, Малыгин, Кузовлев, Рабочий, Оленев, Стульчин, Малышенко, Колесников, Куксов, Лукьянчук (Иванов, 46). Голы: Колесников 69, Малышенко 71, Куксов 74.
+
+  !МЕТАЛЛИСТ! – !СКА Од! – 2-1 (1-0). 08.05. Ст-н Металлист. 20000 зр. Судья – Ходеев. Состав: Двуреченский, Дегтярев, Поточняк, Крячко, Ледней, Шаленко (Улинец, 67), Ткаченко (Журавчак, 87), Сааков, Линке (Довбий, 88), Бачиашвили, Шеленков. – Макашвили, Николаенко, Николайшвили (Сафроненко, 46), Клыков, Умрихин, Марусин, Жарков, Смаровоз (Криштан, 46), Беланов, Корюков, Щербина (Попов, 65). Голы: Бачиашвили 15, Бачиашвили 62 – Марусин 66.
   `;
 
   ngDoCheck() {}
@@ -80,6 +88,7 @@ export class AppComponent implements DoCheck {
     });
 
     this.createHashTable(this.matchUps);
+    console.log(this.statHash);
   }
 
   validateLine(line: string): boolean {
@@ -93,20 +102,31 @@ export class AppComponent implements DoCheck {
   getMatchup(line: string): string {
     const MATCHUP_START = 0;
     const MATCHUP_END = line.search(/– \d+-\d+/g);
+    const res = line.substring(MATCHUP_START, MATCHUP_END).trim();
+
+    if (!res) {
+      this.errorLine = `Неправильно отформатирована строка ${line}`;
+      return ' ';
+    }
     return line.substring(MATCHUP_START, MATCHUP_END).trim();
   }
 
   getTeamName(matchUp: string): string {
     if (matchUp) {
-      const match = matchUp.match(/"((?:\\.|[^"\\])*)"/g);
-      return match ? match[0].replace(/"/g, '') : '';
+      const match = matchUp.match(/!((?:\\.|[^"\\])*)!/g);
+      if (!match) {
+        this.error = `Неправильные скобки в строке ${matchUp}`;
+        return '';
+      } else {
+        return match[0].replace(/!/g, '');
+      }
     } else {
       throw new Error('Quotation marks are not properly placed');
     }
   }
 
   extractQuotedTeam(input: string) {
-    const regex = /"([^"]+)"/g;
+    const regex = /!([^!]+)!/g;
     const matches = [];
     let match;
 
@@ -124,7 +144,7 @@ export class AppComponent implements DoCheck {
       const referee = line.slice(startIndex + 8, endIndex - 2).trim();
       return referee;
     } else {
-      console.error(line);
+      this.error = `Судья не найден, ${line}`;
       throw new Error('Can not find referee');
     }
   }
@@ -194,7 +214,6 @@ export class AppComponent implements DoCheck {
     if (this.isDoubleMatchUp(line)) {
       const teamNames = this.extractQuotedTeam(line);
       const teamDividerIndex = teamStructure.indexOf('–');
-      // const goalsDividerIndex = goals.indexOf('–');
 
       const teamStructure1 = teamStructure.slice(0, teamDividerIndex);
       const teamStructure2 = teamStructure.slice(

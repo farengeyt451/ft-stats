@@ -23,6 +23,16 @@
   (click)="clearData()"
 >Очистить</button>
 
+<h4
+  class="ft__error"
+  *ngIf="errorLine"
+>{{ errorLine }}</h4>
+
+<h4
+  class="ft__error"
+  *ngIf="error && !errorLine"
+>{{ error }}</h4>
+
 <!-- <ft-file-drop (textDrop)="renderFileContent( $event )">
   Drop Your File ( like it's hot )
 </ft-file-drop> -->
