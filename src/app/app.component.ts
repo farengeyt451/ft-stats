@@ -36,6 +36,8 @@ type StatRecord = Record<
   }
 >;
 
+type NonPlayerColumns = Exclude<`${StatKeysEnum}`, "players">;
+
 @Component({
   selector: "app-root",
   standalone: true,
@@ -57,7 +59,7 @@ export class AppComponent implements DoCheck {
   public statHash: Record<string, StatRecord> = {};
 
   public statHashMap: {
-    [k: string]: Map<any, any>;
+    [k: string]: Map<string, { goals: number; games: number }>;
   } = {};
 
   public tableSortingState: any = {};
@@ -116,15 +118,16 @@ export class AppComponent implements DoCheck {
     this.createHashTable(this.matchUps);
 
     for (let team in this.statHash) {
-      const m = new Map(Object.entries(this.statHash[team]));
-      this.statHashMap[team] = m;
+      const matchEntry = new Map(
+        [...Object.entries(this.statHash[team])].sort()
+      );
+      this.statHashMap[team] = matchEntry;
       this.tableSortingState[team] = {
-        players: SortingTypesEnum.Default,
+        players: SortingTypesEnum.DESC,
         games: SortingTypesEnum.Default,
         goals: SortingTypesEnum.Default,
       };
     }
-    console.log(this.tableSortingState);
   }
 
   validateLine(line: string): boolean {
@@ -341,75 +344,81 @@ export class AppComponent implements DoCheck {
   }
 
   sort(teamName: string, sortKey: StatKeysEnum) {
-    this.sortTableData(teamName, this.statHashMap[teamName], sortKey);
+    this.sortTableData(teamName, this.statHashMap, sortKey);
   }
 
   sortTableData(
     teamName: string,
-    data: Map<string, { goals: number; games: number }>,
+    statHashMap: {
+      [k: string]: Map<string, { games: number; goals: number }>;
+    },
     sortKey: StatKeysEnum
   ) {
-    if (sortKey === StatKeysEnum.Goals) {
+    const data = statHashMap[teamName];
+
+    if (sortKey === StatKeysEnum.Players) {
+      this.sortPlayers(data, teamName);
       this.tableSortingState[teamName].games = SortingTypesEnum.Default;
-
-      if (this.tableSortingState[teamName].goals === SortingTypesEnum.Default) {
-        this.sortAscDesc(data, teamName, sortKey, "DESC");
-      } else if (
-        this.tableSortingState[teamName].goals === SortingTypesEnum.DESC
-      ) {
-        this.sortAscDesc(data, teamName, sortKey, "ASC");
-      } else if (
-        this.tableSortingState[teamName].goals === SortingTypesEnum.ASC
-      ) {
-        this.sortAscDesc(data, teamName, sortKey, "DESC");
-      }
-    }
-
-    if (sortKey === StatKeysEnum.Games) {
       this.tableSortingState[teamName].goals = SortingTypesEnum.Default;
+      return;
+    } else if (sortKey === StatKeysEnum.Goals) {
+      this.tableSortingState[teamName].games = SortingTypesEnum.Default;
+      this.tableSortingState[teamName].players = SortingTypesEnum.Default;
+    } else if (sortKey === StatKeysEnum.Games) {
+      this.tableSortingState[teamName].goals = SortingTypesEnum.Default;
+      this.tableSortingState[teamName].players = SortingTypesEnum.Default;
+    }
 
-      if (this.tableSortingState[teamName].games === SortingTypesEnum.Default) {
-        this.sortAscDesc(data, teamName, sortKey, "DESC");
-      } else if (
-        this.tableSortingState[teamName].games === SortingTypesEnum.DESC
-      ) {
-        this.sortAscDesc(data, teamName, sortKey, "ASC");
-      } else if (
-        this.tableSortingState[teamName].games === SortingTypesEnum.ASC
-      ) {
-        this.sortAscDesc(data, teamName, sortKey, "DESC");
-      }
+    if (
+      this.tableSortingState[teamName][sortKey] === SortingTypesEnum.Default
+    ) {
+      this.sortAscDesc(data, teamName, sortKey, "DESC");
+    } else if (
+      this.tableSortingState[teamName][sortKey] === SortingTypesEnum.DESC
+    ) {
+      this.sortAscDesc(data, teamName, sortKey, "ASC");
+    } else if (
+      this.tableSortingState[teamName][sortKey] === SortingTypesEnum.ASC
+    ) {
+      this.sortAscDesc(data, teamName, sortKey, "DESC");
     }
   }
 
-  sortDesc(
+  sortPlayers(
     data: Map<string, { goals: number; games: number }>,
-    teamName: string,
-    key: "games" | "goals"
+    teamName: string
   ) {
-    const sortedDesc = new Map(
-      [...data.entries()].sort(([, a], [, b]) => b[key] - a[key])
-    );
-    this.tableSortingState[teamName][key] = SortingTypesEnum.DESC;
-    this.statHashMap[teamName] = sortedDesc;
-  }
+    let sorted: Map<
+      string,
+      {
+        goals: number;
+        games: number;
+      }
+    > = new Map();
 
-  sortAsc(
-    data: Map<string, { goals: number; games: number }>,
-    teamName: string,
-    key: "games" | "goals"
-  ) {
-    const sortedAsc = new Map(
-      [...data.entries()].sort(([, a], [, b]) => a[key] - b[key])
-    );
-    this.tableSortingState[teamName][key] = SortingTypesEnum.ASC;
-    this.statHashMap[teamName] = sortedAsc;
+    if (this.tableSortingState[teamName].players === SortingTypesEnum.Default) {
+      sorted = new Map([...data.entries()].sort());
+      this.statHashMap[teamName] = sorted;
+      this.tableSortingState[teamName].players = SortingTypesEnum.DESC;
+    } else if (
+      this.tableSortingState[teamName].players === SortingTypesEnum.DESC
+    ) {
+      sorted = new Map([...data.entries()].sort().reverse());
+      this.statHashMap[teamName] = sorted;
+      this.tableSortingState[teamName].players = SortingTypesEnum.ASC;
+    } else if (
+      this.tableSortingState[teamName].players === SortingTypesEnum.ASC
+    ) {
+      sorted = new Map([...data.entries()].sort());
+      this.statHashMap[teamName] = sorted;
+      this.tableSortingState[teamName].players = SortingTypesEnum.DESC;
+    }
   }
 
   sortAscDesc(
     data: Map<string, { goals: number; games: number }>,
     teamName: string,
-    key: "games" | "goals",
+    key: StatKeysEnum,
     order: "ASC" | "DESC"
   ) {
     let sorted: Map<
@@ -422,13 +431,19 @@ export class AppComponent implements DoCheck {
 
     if (order === "DESC") {
       sorted = new Map(
-        [...data.entries()].sort(([, a], [, b]) => b[key] - a[key])
+        [...data.entries()].sort(
+          ([, a], [, b]) =>
+            b[key as NonPlayerColumns] - a[key as NonPlayerColumns]
+        )
       );
     }
 
     if (order === "ASC") {
       sorted = new Map(
-        [...data.entries()].sort(([, a], [, b]) => a[key] - b[key])
+        [...data.entries()].sort(
+          ([, a], [, b]) =>
+            a[key as NonPlayerColumns] - b[key as NonPlayerColumns]
+        )
       );
     }
 
