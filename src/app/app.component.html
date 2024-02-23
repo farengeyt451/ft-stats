@@ -44,27 +44,119 @@
   <div class="ft__wrapper">
     <table
       class="ft__table"
-      *ngFor="let team of statHash | keyvalue"
+      *ngFor="let team of statHashMap | keyvalue"
+      id="{{ 'teamId_' + team.key }}"
     >
       <thead class="ft__head">
         <tr class="ft__head-row">
           <th
             class="ft__head-column"
             colspan="3"
-          >{{team.key}}</th>
+          >
+            {{ team.key }}
+          </th>
         </tr>
       </thead>
 
       <tbody class="ft__body">
         <tr class="ft__body-row">
-          <td class="ft__body-column ft__body-column--player">Игрок</td>
-          <td class="ft__body-column ft__body-column--games">Количество игр</td>
-          <td class="ft__body-column ft__body-column--goals">Количество голов</td>
+          <td
+            [height]="tableRowHeight"
+            [width]="tableColumnWidth"
+            (click)="sort(team.key, StatKeysEnum.Players)"
+            class="ft__body-column ft__body-column--player"
+          >
+            <div class="ft__body-wrappper">
+              <span class="ft__body-data">Игрок</span>
+              <span class="ft__body-icon">
+                <img
+                  *ngIf="tableSortingState[team.key].players === SortingTypesEnum.Default"
+                  class="ft__body-img"
+                  src="../assets/icons/sort.svg"
+                  alt="svg-color"
+                >
+                <img
+                  *ngIf="tableSortingState[team.key].players === SortingTypesEnum.DESC"
+                  class="ft__body-img"
+                  src="../assets/icons/chevron-down.svg"
+                  alt="svg-color"
+                >
+                <img
+                  *ngIf="tableSortingState[team.key].players === SortingTypesEnum.ASC"
+                  class="ft__body-img"
+                  src="../assets/icons/chevron-up.svg"
+                  alt="svg-color"
+                >
+              </span>
+            </div>
+          </td>
+          <td
+            [height]="tableRowHeight"
+            [width]="tableColumnWidth"
+            (click)="sort(team.key, StatKeysEnum.Games)"
+            class="ft__body-column ft__body-column--games"
+          >
+            <div class="ft__body-wrappper">
+              <span class="ft__body-data">Количество игр</span>
+              <span class="ft__body-icon">
+                <img
+                  *ngIf="tableSortingState[team.key].games === SortingTypesEnum.Default"
+                  class="ft__body-img"
+                  src="../assets/icons/sort.svg"
+                  alt="svg-color"
+                >
+                <img
+                  *ngIf="tableSortingState[team.key].games === SortingTypesEnum.DESC"
+                  class="ft__body-img"
+                  src="../assets/icons/chevron-down.svg"
+                  alt="svg-color"
+                >
+                <img
+                  *ngIf="tableSortingState[team.key].games === SortingTypesEnum.ASC"
+                  class="ft__body-img"
+                  src="../assets/icons/chevron-up.svg"
+                  alt="svg-color"
+                >
+              </span>
+            </div>
+          </td>
+
+          <td
+            [height]="tableRowHeight"
+            [width]="tableColumnWidth"
+            (click)="sort(team.key, StatKeysEnum.Goals)"
+            class="ft__body-column ft__body-column--goals"
+          >
+            <div class="ft__body-wrappper">
+              <span class="ft__body-data">Количество голов</span>
+              <span class="ft__body-icon">
+                <img
+                  *ngIf="tableSortingState[team.key].goals === SortingTypesEnum.Default"
+                  class="ft__body-img"
+                  src="../assets/icons/sort.svg"
+                  alt="svg-color"
+                >
+                <img
+                  *ngIf="tableSortingState[team.key].goals === SortingTypesEnum.DESC"
+                  class="ft__body-img"
+                  src="../assets/icons/chevron-down.svg"
+                  alt="svg-color"
+                >
+                <img
+                  *ngIf="tableSortingState[team.key].goals === SortingTypesEnum.ASC"
+                  class="ft__body-img"
+                  src="../assets/icons/chevron-up.svg"
+                  alt="svg-color"
+                >
+              </span>
+            </div>
+
+          </td>
         </tr>
 
         <tr
           class="ft__body-row"
-          *ngFor="let player of team.value | keyvalue"
+          *ngFor="let player of team.value | keyvalue: originalOrder"
         >
           <td class="ft__body-column ft__body-column--player">{{ player.key }}</td>
           <td class="ft__body-column ft__body-column--games">{{ player.value.games }}</td>
