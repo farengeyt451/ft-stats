@@ -62,7 +62,15 @@ export class AppComponent implements DoCheck {
     [k: string]: Map<string, { goals: number; games: number }>;
   } = {};
 
+  public refereeHashMap: {
+    [k: string]: Map<string, { games: number }>;
+  } = {};
+
   public tableSortingState: any = {};
+  public refereeSortingState: any = {
+    referee: SortingTypesEnum.DESC,
+    games: SortingTypesEnum.Default,
+  };
 
   public error: string = "";
   public errorLine: string = "";
@@ -73,8 +81,8 @@ export class AppComponent implements DoCheck {
   public readonly tableColumnWidth = 220;
 
   constructor() {
-    this.renderFileContent(this.example);
-    this.formStats(this.example);
+    // this.renderFileContent(this.example);
+    // this.formStats(this.example);
   }
 
   public fileContent: string = "";
@@ -128,6 +136,10 @@ export class AppComponent implements DoCheck {
         goals: SortingTypesEnum.Default,
       };
     }
+
+    this.refereeHashMap = {
+      refs: new Map([...Object.entries(this.refereeHash)].sort()),
+    };
   }
 
   validateLine(line: string): boolean {
@@ -449,6 +461,62 @@ export class AppComponent implements DoCheck {
 
     this.tableSortingState[teamName][key] = SortingTypesEnum[order];
     this.statHashMap[teamName] = sorted;
+  }
+
+  sortRefs(key: "referee" | "games") {
+    let sorted: any;
+
+    if (this.refereeSortingState[key] === SortingTypesEnum.Default) {
+      if (key === "referee") {
+        sorted = new Map([...this.refereeHashMap["refs"].entries()].sort());
+        this.refereeSortingState.referee = SortingTypesEnum.DESC;
+        this.refereeSortingState.games = SortingTypesEnum.Default;
+      } else if (key === "games") {
+        sorted = new Map(
+          [...this.refereeHashMap["refs"].entries()].sort(
+            ([, a], [, b]) => b.games - a.games
+          )
+        );
+
+        this.refereeSortingState.games = SortingTypesEnum.DESC;
+        this.refereeSortingState.referee = SortingTypesEnum.Default;
+      }
+    } else if (this.refereeSortingState[key] === SortingTypesEnum.DESC) {
+      if (key === "referee") {
+        sorted = new Map(
+          [...this.refereeHashMap["refs"].entries()].sort().reverse()
+        );
+
+        this.refereeSortingState.referee = SortingTypesEnum.ASC;
+        this.refereeSortingState.games = SortingTypesEnum.Default;
+      } else if (key === "games") {
+        sorted = new Map(
+          [...this.refereeHashMap["refs"].entries()].sort(
+            ([, a], [, b]) => a.games - b.games
+          )
+        );
+
+        this.refereeSortingState.referee = SortingTypesEnum.Default;
+        this.refereeSortingState.games = SortingTypesEnum.ASC;
+      }
+    } else if (this.refereeSortingState[key] === SortingTypesEnum.ASC) {
+      if (key === "referee") {
+        sorted = new Map([...this.refereeHashMap["refs"].entries()].sort());
+
+        this.refereeSortingState.referee = SortingTypesEnum.DESC;
+        this.refereeSortingState.games = SortingTypesEnum.Default;
+      } else if (key === "games") {
+        sorted = new Map(
+          [...this.refereeHashMap["refs"].entries()].sort(
+            ([, a], [, b]) => b.games - a.games
+          )
+        );
+        this.refereeSortingState.referee = SortingTypesEnum.Default;
+        this.refereeSortingState.games = SortingTypesEnum.DESC;
+      }
+    }
+
+    this.refereeHashMap["refs"] = sorted;
   }
 
   originalOrder = (a: KeyValue<any, any>, b: KeyValue<any, any>): number => {

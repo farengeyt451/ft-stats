@@ -172,21 +172,82 @@
   </h3>
 
   <div class="ft__wrapper">
-    <table class="ft__table">
+    <table
+      class="ft__table"
+      *ngFor="let referee of refereeHashMap | keyvalue"
+    >
       <thead class="ft__head">
         <tr class="ft__head-row">
-          <th class="ft__head-column">Судья</th>
-          <th class="ft__head-column">Количество игр</th>
+          <th
+            [height]="tableRowHeight"
+            [width]="tableColumnWidth"
+            (click)="sortRefs('referee')"
+            class="ft__head-column"
+          >
+            <div class="ft__body-wrappper">
+              <span class="ft__body-data">Судья</span>
+              <span class="ft__body-icon">
+                <img
+                  *ngIf="refereeSortingState.referee === SortingTypesEnum.Default"
+                  class="ft__body-img"
+                  src="../assets/icons/sort.svg"
+                  alt="svg-color"
+                >
+                <img
+                  *ngIf="refereeSortingState.referee === SortingTypesEnum.DESC"
+                  class="ft__body-img"
+                  src="../assets/icons/chevron-down.svg"
+                  alt="svg-color"
+                >
+                <img
+                  *ngIf="refereeSortingState.referee === SortingTypesEnum.ASC"
+                  class="ft__body-img"
+                  src="../assets/icons/chevron-up.svg"
+                  alt="svg-color"
+                >
+              </span>
+            </div>
+          </th>
+          <th
+            [height]="tableRowHeight"
+            [width]="tableColumnWidth"
+            (click)="sortRefs('games')"
+            class="ft__head-column"
+          >
+            <div class="ft__body-wrappper">
+              <span class="ft__body-data">Количество игр</span>
+              <span class="ft__body-icon">
+                <img
+                  *ngIf="refereeSortingState.games === SortingTypesEnum.Default"
+                  class="ft__body-img"
+                  src="../assets/icons/sort.svg"
+                  alt="svg-color"
+                >
+                <img
+                  *ngIf="refereeSortingState.games === SortingTypesEnum.DESC"
+                  class="ft__body-img"
+                  src="../assets/icons/chevron-down.svg"
+                  alt="svg-color"
+                >
+                <img
+                  *ngIf="refereeSortingState.games === SortingTypesEnum.ASC"
+                  class="ft__body-img"
+                  src="../assets/icons/chevron-up.svg"
+                  alt="svg-color"
+                >
+              </span>
+            </div>
+          </th>
         </tr>
       </thead>
 
       <tbody class="ft__body">
         <tr
           class="ft__body-row"
-          *ngFor="let referee of refereeHash | keyvalue"
+          *ngFor="let ref of referee.value| keyvalue: originalOrder"
         >
-          <td class="ft__body-column">{{ referee.key }}</td>
-          <td class="ft__body-column ft__body-column--games">{{ referee.value.games }}</td>
+          <td class="ft__body-column">{{ ref.key }}</td>
+          <td class="ft__body-column ft__body-column--games">{{ ref.value.games }}</td>
         </tr>
       </tbody>
     </table>
