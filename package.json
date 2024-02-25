@@ -5,6 +5,7 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build --base-href https://farengeyt451.github.io/ft-stats/",
+    "build-local": "ng build --base-href /",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
   },
